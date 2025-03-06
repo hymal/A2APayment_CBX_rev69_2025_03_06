@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DataCapture name="DC-captureReplyCode" continueOnError="true" enabled="true">
+    <DisplayName>DC-captureReplyCode</DisplayName>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <Capture>
+        <Collect ref="responseLogs.resp-errorCode"/>
+        <DataCollector>dc_backend_error_code</DataCollector>
+    </Capture>
+    <Capture>
+        <Collect ref="responseLogs.resp-errorMessage"/>
+        <DataCollector>dc_backend_error_message</DataCollector>
+    </Capture>
+</DataCapture>

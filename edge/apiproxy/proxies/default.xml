@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--<UAT>-->
+<ProxyEndpoint name="default">
+    <DefaultFaultRule name="fault-rule">
+        <Step>
+            <Name>FC-faultRules</Name>
+        </Step>
+        <Step>
+            <Name>AM-commonLogging</Name>
+        </Step>
+        <Step>
+            <Name>FC-setResponseHeaders</Name>
+        </Step>
+    </DefaultFaultRule>
+    <FaultRules>
+        <FaultRule name="RaiseFault">
+            <Step>
+                <Name>AM-commonLogging</Name>
+            </Step>
+            <Step>
+                <Name>FC-setResponseHeaders</Name>
+            </Step>
+            <Condition>(fault.name = "RaiseFault")</Condition>
+        </FaultRule>
+    </FaultRules>
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>AM-setSuccessFlag</Name>
+            </Step>
+            <Step>
+                <Name>EV-extractTransactionId</Name>
+                <Condition>(request.content != null)</Condition>
+            </Step>
+            <Step>
+                <Name>KVM-readCommonConfig</Name>
+            </Step>
+            <Step>
+                <Name>JS-corsValidation</Name>
+            </Step>
+            <Step>
+                <Condition>(request.verb is "OPTIONS")</Condition>
+                <Name>RF-handlePreflightRequest</Name>
+            </Step>
+            <Step>
+                <Name>Verify-API-Key</Name>
+            </Step>
+            <Step>
+                <Name>JS-validateIP</Name>
+            </Step>
+            <Step>
+                <Condition>!(isValidIp is true)</Condition>
+                <Name>AC-accessControl</Name>
+            </Step>
+            <Step>
+                <Name>SA-rateLimit</Name>
+            </Step>
+            <Step>
+                <Name>Quota</Name>
+            </Step>
+            <Step>
+                <Name>RF-invalidContentType</Name>
+                <Condition>(request.header.content-type != "application/json")</Condition>
+            </Step>
+            <Step>
+                <Name>EV-extractPayload</Name>
+                <Condition>(request.content != null)</Condition>
+            </Step>
+            <Step>
+                <Name>JS-validateScope</Name>
+            </Step>
+            <Step>
+                <Condition>!(isValidScope is true)</Condition>
+                <Name>RF-invalidRequestScope</Name>
+            </Step>
+            <Step>
+                <Name>RF-badRequest</Name>
+                <Condition>(requestPayload.RequestSignatureEncryptedValue = "") OR (requestPayload.SymmetricKeyEncryptedValue = "") OR (requestPayload.Scope = "") OR (requestPayload.TransactionId = "") OR (requestPayload.OAuthTokenValue = "")</Condition>
+            </Step>
+            <Step>
+                <Name>AM-setAuthHeader</Name>
+            </Step>
+            <Step>
+                <Name>FC-validateToken</Name>
+            </Step>
+        </Request>
+        <Response>
+            <Step>
+                <Name>FC-setResponseHeaders</Name>
+            </Step>
+        </Response>
+    </PreFlow>
+    <Flows>
+        <Flow name="A2APayment_CBX">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>FC-validateCertificateAndExtractPublickey</Name>
+                </Step>
+                <Step>
+                    <Name>FC-Decryption</Name>
+                </Step>
+                <Step>
+                    <Name>AM-setPayload</Name>
+                </Step>
+                <Step>
+                    <Name>AM-requestFromClientLog</Name>
+                    <Condition>(organization.name != "hdfcbank-apigee-runtime-prod")</Condition>
+                </Step>
+                <Step>
+                    <Name>EV-setRequestLogs</Name>
+                    <Condition>(request.content != null)</Condition>
+                </Step>
+                <Step>
+                    <Name>JS-validateFieldScope</Name>
+                </Step>
+                <Step>
+                    <Name>FC-threatProtection</Name>
+                </Step>
+                <Step>
+                    <Name>XSL-Request</Name>
+                </Step>
+                <Step>
+                    <Name>AM-requestRoutedToBackendLog</Name>
+                    <Condition>(organization.name != "hdfcbank-apigee-runtime-prod")</Condition>
+                </Step>
+            </Request>
+            <Response>
+                <Step>
+                    <Name>AM-responsePayloadFromBackendLog</Name>
+                    <Condition>(organization.name != "hdfcbank-apigee-runtime-prod")</Condition>
+                </Step>
+                <Step>
+                    <Name>EV-setResponseLogs</Name>
+                    <Condition>(response.content != null)</Condition>
+                </Step>
+                <Step>
+                    <Name>RF-responsePayloadValidation</Name>
+                    <Condition>(responseLogs.resp-faxml = null)</Condition>
+                </Step>
+                <Step>
+                    <Name>DC-captureReplyCode</Name>
+                </Step>
+                <Step>
+                    <Name>AM-responseToClientBeforeEncLog</Name>
+                    <Condition>(organization.name != "hdfcbank-apigee-runtime-prod")</Condition>
+                </Step>
+                <Step>
+                    <Name>FC-Encryption</Name>
+                </Step>
+                <Step>
+                    <Name>AM-setResponsePayload</Name>
+                </Step>
+                <Step>
+                    <Name>AM-responseToClientLog</Name>
+                    <Condition>(organization.name != "hdfcbank-apigee-runtime-prod")</Condition>
+                </Step>
+                <Step>
+                    <Name>AM-commonLogging</Name>
+                </Step>
+            </Response>
+            <Condition>((proxy.pathsuffix MatchesPath "") or (proxy.pathsuffix MatchesPath "/")) and (request.verb = "POST")</Condition>
+        </Flow>
+        <Flow name="A2APayment_CBX">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>RF-faultResponseMethodNotAllowed</Name>
+                </Step>
+            </Request>
+            <Response/>
+            <Condition>(proxy.pathsuffix MatchesPath "") or (proxy.pathsuffix MatchesPath "/")</Condition>
+        </Flow>
+        <Flow name="Fallback">
+            <Description/>
+            <Request>
+                <Step>
+                    <Name>RF-faultResponseNotFound</Name>
+                </Step>
+            </Request>
+            <Response/>
+        </Flow>
+    </Flows>
+    <PostFlow name="PostFlow">
+        <Request/>
+        <Response/>
+    </PostFlow>
+    <PostClientFlow>
+        <Response>
+            <Step>
+                <Name>FC-Logging</Name>
+            </Step>
+        </Response>
+    </PostClientFlow>
+    <HTTPProxyConnection>
+        <BasePath>/API/A2APayment_CBX</BasePath>
+        <VirtualHost>secure</VirtualHost>
+    </HTTPProxyConnection>
+    <RouteRule name="default">
+        <TargetEndpoint>default</TargetEndpoint>
+    </RouteRule>
+</ProxyEndpoint>
