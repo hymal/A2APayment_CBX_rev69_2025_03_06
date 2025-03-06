@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="false" enabled="true" name="AM-setPayload">
+    <DisplayName>AM-setPayload</DisplayName>
+    <Properties/>
+    <Set>
+        <Payload contentType="application/xml"><![CDATA[{requestXMlPayload}]]></Payload>
+    </Set>
+    <AssignVariable>
+        <Name>requestContentType</Name>
+        <Ref>request.header.content-type</Ref>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+    <AssignTo createNew="false" transport="http" type="request">request</AssignTo>
+</AssignMessage>
