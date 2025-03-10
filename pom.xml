@@ -17,6 +17,7 @@
         <sonar.projectKey>A2APayment</sonar.projectKey>
         <sonar.projectName>A2APayment_CBX_rev69_2025_03_06</sonar.projectName>
         <sonar.host.url>http://127.0.0.1:9000</sonar.host.url>
+        <sonar.javascript.node.maxspace>4096</sonar.javascript.node.maxspace>
         <sonar.login>admin</sonar.login>
         <sonar.password>sqa_ff52edc710ccb3579d6f4b533298823473613300</sonar.password>     
     </properties>
