@@ -23,6 +23,7 @@
     </properties>
 
     <build>
+  <plugins>
         <plugin>
                                     <groupId>org.sonarsource.scanner.maven</groupId>
                                     <artifactId>sonar-maven-plugin</artifactId>
@@ -41,5 +42,6 @@
                                              <sonar.login>sqa_ff52edc710ccb3579d6f4b533298823473613300</sonar.login> <!-- Use the Jenkins environment variable here -->
                                     </configuration>
                            </plugin>
+  </plugins>
     </build>
 </project>
