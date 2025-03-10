@@ -23,13 +23,23 @@
     </properties>
 
     <build>
-        <plugins>
-            <!-- SonarQube Scanner Plugin -->
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.9.1.2184</version>
-            </plugin>
-        </plugins>
+        <plugin>
+                                    <groupId>org.sonarsource.scanner.maven</groupId>
+                                    <artifactId>sonar-maven-plugin</artifactId>
+                                    <version>3.9.1.2184</version> <!-- Use the latest version -->
+                                     
+                                    <executions>
+                                             <execution>
+                                                      <phase>verify</phase>
+                                                      <goals>
+                                                               <goal>sonar</goal>
+                                                      </goals>
+                                             </execution>
+                                    </executions>
+                                    <configuration>
+                                             <sonar.host.url> http://127.0.0.1:9000</sonar.host.url>
+                                             <sonar.login>sqa_ff52edc710ccb3579d6f4b533298823473613300</sonar.login> <!-- Use the Jenkins environment variable here -->
+                                    </configuration>
+                           </plugin>
     </build>
 </project>
